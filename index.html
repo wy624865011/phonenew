@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+    <title>新闻版APP</title>
+    <link rel="stylesheet" href="css/news.css"/>
+    <link rel="stylesheet" href="css/swiper.min.css"/>
+    <script type="text/javascript" src="js/swiper.min.js"></script>
+    <script type="text/javascript" src="js/jquery-1.11.3.min.js"></script>
+</head>
+
+<body>
+<!-- rem s -->
+<script>
+    (function (doc, win) {
+        var _root = doc.documentElement,
+                resizeEvent = 'orientationchange' in window ? 'orientationchange' : 'resize',
+                resizeCallback = function () {
+                    var clientWidth = _root.clientWidth,
+                            fontSize = 10 * 10;
+                    if (!clientWidth) return;
+                    if (clientWidth < 1080) {
+                        fontSize = 100 * (clientWidth / 750);
+                    } else {
+                        fontSize = 100 * (1080 / 750);
+                    }
+                    _root.style.fontSize = fontSize + 'px';
+                };
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvent, resizeCallback, false);
+        doc.addEventListener('DOMContentLoaded', resizeCallback, false);
+    })(document, window);
+</script>
+<!-- rem e -->
+
+<!--header -->
+<div class="v-mobile-header">
+    <h1>新闻版APP</h1>
+    <div class="i-login">
+        <i class="i-login-serch"></i>
+    </div>
+</div>
+
+<!--nav-->
+<div class="top-menu">
+    <div class="top-menu-inner">
+        <a href="#">首页</a>
+        <a href="./index.html" >军事</a>
+        <a href="#">娱乐</a>
+        <a href="#">国内</a>
+        <a href="#">国际</a>
+        <a href="#">数读</a>
+        <a href="#">财经</a>
+        <a href="./girl.html">美女</a>
+        <a href="#">社会</a>
+    </div>
+</div>
+
+
+<div class="content">
+    <!--焦点图-->
+    <div class="focus">
+        <div class="swiper-container">
+            <div class="swiper-wrapper">
+            </div>
+            <div class="swiper-pagination"></div>
+        </div>
+    </div>
+
+    <!--main-->
+    <div class="main"></div>
+</div>
+
+<!--内容部分的数据-->
+<script type="text/template" id="itemTmp">
+    <%_.each(_item, function(n){%>
+    <%var _this=n%>
+
+    <%if (_this.style.images) { %>
+    <!--三小图-->
+    <div class="item itemPics">
+        <a href="<%=_this.link.weburl%>">
+            <div class="i-metadata">
+                <div class="i-title">
+                    <h3><%=_this.title%></h3>
+                </div>
+                <div class="i-thumb">
+                    <div class="i-pic">
+                        <img src="<%= _this.style.images[0] %>" alt=""/>
+                        <img src="<%= _this.style.images[1] %>" alt=""/>
+                        <img src="<%= _this.style.images[2] %>" alt=""/>
+                    </div>
+                </div>
+                <div class="i-desc">
+                    <div class="i-time"><%=changeTime(_this.updateTime)%></div>
+                    <div class="i-flag">专题</div>
+                    <div class="i-num"><%=_this.comments%></div>
+                </div>
+            </div>
+        </a>
+    </div>
+    <%return false%>
+    <%}else if(_this.type=='phvideo'){%>
+    <!--播放器-->
+    <div class="item itemVideo">
+        <a href="<%=_this.link.weburl%>">
+            <div class="i-metadata">
+                <div class="i-title">
+                    <h3><%=_this.title%></h3>
+                </div>
+                <div class="i-thumb">
+                    <div class="i-pic">
+                        <img src="<%=_this.thumbnail%>" alt=""/>
+                    </div>
+                    <div class="i-play">
+                        <span class="playbtn"></span>
+                        <span></span>
+                    </div>
+                </div>
+                <div class="i-desc">
+                    <div class="i-resource"><%=_this.phvideo.channelName%></div>
+                    <div class="i-time"><%=changeTime(_this.updateTime)%></div>
+                    <div class="i-num"><%=_this.comments%></div>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    </div>
+    <%return false%>
+    <%}else if(_this.thumbnail){%>
+    <!--左图右文-->
+    <div class="item">
+        <a href="<%=_this.link.weburl%>">
+            <div class="i-thumb">
+                <div class="i-pic">
+                    <img src="<%=_this.thumbnail%>" alt=""/>
+                </div>
+            </div>
+            <div class="i-metadata">
+                <div class="i-title">
+                    <h3><%=_this.title%></h3>
+                </div>
+                <div class="i-desc">
+                    <div class="i-time"><%=changeTime(_this.updateTime) %></div>
+                    <div class="i-flag">专题</div>
+                    <div class="i-num"><%=_this.comments%></div>
+                </div>
+            </div>
+        </a>
+    </div>
+    <%return false%>
+    <%}else{%>
+    <!--纯文字-->
+    <div class="item itemTxt">
+        <a href="<%=_this.link.weburl%>">
+            <div class="i-metadata">
+                <div class="i-title">
+                    <h3><%=_this.title%></h3>
+                </div>
+                <div class="i-desc">
+                    <div class="i-time"><%=changeTime(_this.updateTime)%></div>
+                    <div class="i-num"><%=_this.comments%></div>
+                </div>
+            </div>
+        </a>
+    </div>
+    <%}%>
+    <%})%>
+</script>
+
+
+<script type="text/javascript" src="js/underscore-min.js"></script>
+<script type="text/javascript">
+    //var _foucs;
+    $.ajax({
+        url: 'https://api.iclient.ifeng.com/ClientNews?id=SYLB10,SYDT10&gv=5.4.0&os=ios&uid=8jWzrXDWQeep2Nw4AZYzmHxkbneHy4Fj&callback=jQuery191037427085312083364_1483258003039&_=1483258003040',
+        dataType: 'jsonp',
+        jsonp: 'callback',
+        success: function (data) {
+            for (i = 0; i < data.length; i++) {
+                if (data[i].type == 'focus') {
+                    var foucsList = data[i].item;
+                    //console.log(_focus);
+                } else {
+                    var itemList = data[i].item;
+                    //console.log(itemList);
+                }
+            }
+            _focus = foucsList;
+            _item = itemList;
+            //console.log(_focus);
+            $('.swiper-wrapper').html(_.template($('#focusTmp').html(), _focus));
+            $('.main').html(_.template($('#itemTmp').html(), _item));
+            var myswiper = new Swiper('.swiper-container', {
+                pagination: '.swiper-pagination',
+                autoplay:2000
+            })
+
+
+        }
+    })
+    //时间戳整理
+    function changeTime(time){
+        if(time){
+            var str=time;
+            var str1 =str.substr(5,2);
+            var str2 =str.substr(8,2);
+            return str=str1+'-'+str2;
+        }
+    }
+</script>
+<script type="text/template" id="focusTmp">
+    <%_.each(_focus, function(n){%>
+    <%var _this=n%>
+    <div class="swiper-slide">
+        <a href="<%=_this.link.weburl%>">
+            <img src="<%=_this.thumbnail%>" alt=""/>
+        </a>
+
+        <h3><span>推荐</span><%=_this.title%> 结果…</h3>
+    </div>
+    <%})%>
+</script>
+
+<script>
+    var nav = $(".top-menu-inner a");
+    nav.on("click",function () {
+        var $this = $(this);
+        var content = $(".content");
+        var newsType = $this.text();
+        $this.addClass("cur").siblings().removeClass("cur");
+        content.html("");
+        var data =[
+            {
+                title:"qqq",
+                content:12
+            },
+            {
+                title:"qqq",
+                content:12
+            },
+            {
+                title:"qqq",
+                content:12
+            },
+            {
+                title:"qqq",
+                content:12
+            },
+            {
+                title:"qqq",
+                content:12
+            },
+        ];
+        for (i = 0; i < data.length; i++) {
+            if (data[i].type == 'focus') {
+                var foucsList = data[i].item;
+                //console.log(_focus);
+            } else {
+                var itemList = data[i].item;
+                //console.log(itemList);
+            }
+        }
+        _focus = foucsList;
+        _item = itemList;
+        //console.log(_focus);
+        $('.swiper-wrapper').html(_.template($('#focusTmp').html(), _focus));
+        $('.main').html(_.template($('#itemTmp').html(), _item));
+        var myswiper = new Swiper('.swiper-container', {
+            pagination: '.swiper-pagination',
+            autoplay:2000
+        })
+//        $.ajax({
+//            url: "https://api.iclient.ifeng.com/ClientNews?id=SYLB10,SYDT10&gv=5.4.0&os=ios&uid=8jWzrXDWQeep2Nw4AZYzmHxkbneHy4Fj&callback=jQuery191037427085312083364_1483258003039&_=1483258003040",
+//            type: "post",
+//            data: {
+//                newsType: newsType
+//            },
+//            success: function (data) {
+//                console.log(data);
+//            }
+//        });
+
+        content.append("<h1>hhhh</h1>")
+
+
+    })
+</script>
+
+</body>
+</html>
